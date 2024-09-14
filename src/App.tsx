@@ -1,25 +1,31 @@
-import type { Component } from 'solid-js';
-
-import logo from './logo.svg';
-import styles from './App.module.css';
+import { Component, createSignal, createEffect } from 'solid-js';
 
 const App: Component = () => {
+  const [data, setData] = createSignal<string | null>(null);
+  const [error, setError] = createSignal<string | null>(null);
+
+  createEffect(() => {
+    fetch('/api')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.text();
+      })
+      .then(text => setData(text))
+      .catch(err => setError(err.message));
+  });
+
   return (
-    <div class={styles.App}>
-      <header class={styles.header}>
-        <img src={logo} class={styles.logo} alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          class={styles.link}
-          href="https://github.com/solidjs/solid"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn Solid
-        </a>
-      </header>
+    <div>
+      <h1>Solid App with Fetch</h1>
+      {error() ? (
+        <p style={{ color: 'red' }}>Error: {error()}</p>
+      ) : data() ? (
+        <p>Response from server: {data()}</p>
+      ) : (
+        <p>Loading...</p>
+      )}
     </div>
   );
 };
