@@ -18,48 +18,31 @@ const App: Component = () => {
 
     const fetchData = async () => {
       try {
-        const response = await fetch("/api", { signal });
+        const response = await fetch("/api?follow", { signal });
 
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
 
-        const reader = response.body!.getReader();
-        const decoder = new TextDecoder("utf-8");
-        let buffer = "";
+        const textStream = response.body!
+          .pipeThrough(new TextDecoderStream())
+          .pipeThrough(splitStream("\n"));
+
+        const reader = textStream.getReader();
 
         while (true) {
           const { value, done } = await reader.read();
 
-          if (done) break;
+          if (done) { console.log("Stream complete"); break; }
 
-          buffer += decoder.decode(value, { stream: true });
-          let lines = buffer.split("\n");
-
-          // Leave the last partial line in the buffer
-          buffer = lines.pop()!;
-
-          for (let line of lines) {
-            if (line.trim()) {
-              try {
-                const json = JSON.parse(line);
-                setItems((prev) => [json, ...prev]);
-                setLoading(false);
-              } catch (e) {
-                console.error("Failed to parse line", line, e);
-              }
+          if (value.trim()) {
+            try {
+              const json = JSON.parse(value);
+              setItems((prev) => [json, ...prev]);
+              setLoading(false);
+            } catch (e) {
+              console.error("Failed to parse JSON", value, e);
             }
-          }
-        }
-
-        // Process any remaining buffer
-        if (buffer.trim()) {
-          try {
-            const json = JSON.parse(buffer);
-            setItems((prev) => [json, ...prev]);
-            setLoading(false);
-          } catch (e) {
-            console.error("Failed to parse buffer", buffer, e);
           }
         }
 
@@ -82,7 +65,7 @@ const App: Component = () => {
 
   return (
     <div>
-      <h1>Solid App with Streaming Data</h1>
+      <h1>ze stream</h1>
       <Show when={error()}>
         <p style={{ color: "red" }}>Error: {error()}</p>
       </Show>
@@ -91,7 +74,7 @@ const App: Component = () => {
       </Show>
       <ul>
         <For each={items()}>
-          {(item) => <li>{JSON.stringify(item)}</li>}
+          {(item) => <li>{item.topic} -- {JSON.stringify(item.meta)}</li>}
         </For>
       </ul>
     </div>
@@ -99,3 +82,21 @@ const App: Component = () => {
 };
 
 export default App;
+
+// Utility function to split a stream by a delimiter
+function splitStream(delimiter: string) {
+  let buffer = "";
+  return new TransformStream<string, string>({
+    transform(chunk, controller) {
+      buffer += chunk;
+      const parts = buffer.split(delimiter);
+      buffer = parts.pop()!; // Save the last partial line
+      parts.forEach((part) => controller.enqueue(part));
+    },
+    flush(controller) {
+      if (buffer) {
+        controller.enqueue(buffer);
+      }
+    },
+  });
+}
