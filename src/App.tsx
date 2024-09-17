@@ -8,7 +8,6 @@ const Nav: Component<{ items: StreamedItem[] }> = (props) => (
         {(item) => (
           <li>
             {item.topic}
-            {item.meta ? ` -- ${JSON.stringify(item.meta)}` : ""}
           </li>
         )}
       </For>
