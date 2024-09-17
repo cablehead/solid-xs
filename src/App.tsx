@@ -1,9 +1,23 @@
 import { Component, For, Show } from "solid-js";
-import { useStreamedItems } from "./useStreamedItems";
+import { StreamedItem, useStreamedItems } from "./useStreamedItems";
+
+const Nav: Component<{ items: StreamedItem[] }> = (props) => (
+  <nav>
+    <ul>
+      <For each={props.items}>
+        {(item) => (
+          <li>
+            {item.topic}
+            {item.meta ? ` -- ${JSON.stringify(item.meta)}` : ""}
+          </li>
+        )}
+      </For>
+    </ul>
+  </nav>
+);
 
 const App: Component = () => {
   const { state } = useStreamedItems();
-
   return (
     <div>
       <Show when={state.error}>
@@ -13,16 +27,7 @@ const App: Component = () => {
         <p>Loading...</p>
       </Show>
       <main>
-        <ul>
-          <For each={state.items}>
-            {(item) => (
-              <li>
-                {item.topic}
-                {item.meta ? ` -- ${JSON.stringify(item.meta)}` : ""}
-              </li>
-            )}
-          </For>
-        </ul>
+        <Nav items={state.items} />
       </main>
     </div>
   );
