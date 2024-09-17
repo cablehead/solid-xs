@@ -56,3 +56,24 @@ main {
   overflow: hidden;
   gap: 0.5ch;
 }
+
+nav {
+  padding: 1em;
+}
+
+nav ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+nav ul li {
+  padding: 0.5em;
+  display: flex;
+  align-items: center;
+}
+
+
+nav ul li:hover {
+  background-color: #2a2d2e;
+}
