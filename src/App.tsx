@@ -33,7 +33,10 @@ const App: Component = () => {
         while (true) {
           const { value, done } = await reader.read();
 
-          if (done) { console.log("Stream complete"); break; }
+          if (done) {
+            console.log("Stream complete");
+            break;
+          }
 
           if (value.trim()) {
             try {
@@ -74,7 +77,12 @@ const App: Component = () => {
       </Show>
       <ul>
         <For each={items()}>
-          {(item) => <li>{item.topic} -- {JSON.stringify(item.meta)}</li>}
+          {(item) => (
+            <li>
+              {item.topic}
+              {item.meta ? ` -- ${JSON.stringify(item.meta)}` : ""}
+            </li>
+          )}
         </For>
       </ul>
     </div>
