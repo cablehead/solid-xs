@@ -68,23 +68,25 @@ const App: Component = () => {
 
   return (
     <div>
-      <h1>ze stream</h1>
       <Show when={error()}>
         <p style={{ color: "red" }}>Error: {error()}</p>
       </Show>
       <Show when={loading()}>
         <p>Loading...</p>
       </Show>
-      <ul>
-        <For each={items()}>
-          {(item) => (
-            <li>
-              {item.topic}
-              {item.meta ? ` -- ${JSON.stringify(item.meta)}` : ""}
-            </li>
-          )}
-        </For>
-      </ul>
+
+      <main>
+        <ul>
+          <For each={items()}>
+            {(item) => (
+              <li>
+                {item.topic}
+                {item.meta ? ` -- ${JSON.stringify(item.meta)}` : ""}
+              </li>
+            )}
+          </For>
+        </ul>
+      </main>
     </div>
   );
 };

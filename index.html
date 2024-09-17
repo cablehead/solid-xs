@@ -3,14 +3,32 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
+    <meta name="theme-color" content="#43AB85" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#883388" media="(prefers-color-scheme: dark)" />
     <link rel="shortcut icon" type="image/ico" href="/src/assets/favicon.ico" />
+
     <title>Solid App</title>
+
+    <script>
+      const ONE_HOUR = 3600000;
+      const currentTime = Date.now();
+      const getSystemTheme = () =>
+        window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      let theme, expiry;
+      try {
+        ({ theme, expiry } = JSON.parse(localStorage.getItem("theme") || "{}"));
+      } catch {
+        expiry = 0;
+      }
+      if (!expiry || currentTime - expiry >= ONE_HOUR) {
+        theme = getSystemTheme();
+      }
+      document.documentElement.setAttribute("data-theme", theme);
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-
     <script src="/src/index.tsx" type="module"></script>
   </body>
 </html>
