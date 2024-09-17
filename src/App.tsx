@@ -1,66 +1,52 @@
-import {
-  Component,
-  createSignal,
-  For,
-  onCleanup,
-  onMount,
-  Show,
-} from "solid-js";
+import { Component, For, onCleanup, onMount, Show } from "solid-js";
+import { createStore } from "solid-js/store";
 
 const App: Component = () => {
-  const [items, setItems] = createSignal<any[]>([]);
-  const [error, setError] = createSignal<string | null>(null);
-  const [loading, setLoading] = createSignal(true);
+  const [state, setState] = createStore({
+    items: [] as any[],
+    error: null as string | null,
+    loading: true,
+  });
 
   onMount(() => {
     const controller = new AbortController();
     const signal = controller.signal;
-
     const fetchData = async () => {
       try {
         const response = await fetch("/api?follow", { signal });
-
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-
         const textStream = response.body!
           .pipeThrough(new TextDecoderStream())
           .pipeThrough(splitStream("\n"));
-
         const reader = textStream.getReader();
-
         while (true) {
           const { value, done } = await reader.read();
-
           if (done) {
             console.log("Stream complete");
             break;
           }
-
           if (value.trim()) {
             try {
               const json = JSON.parse(value);
-              setItems((prev) => [json, ...prev]);
-              setLoading(false);
+              setState("items", (items) => [json, ...items]);
+              setState("loading", false);
             } catch (e) {
               console.error("Failed to parse JSON", value, e);
             }
           }
         }
-
         reader.releaseLock();
-        setLoading(false);
+        setState("loading", false);
       } catch (err: any) {
         if (err.name !== "AbortError") {
-          setError(err.message);
-          setLoading(false);
+          setState("error", err.message);
+          setState("loading", false);
         }
       }
     };
-
     fetchData();
-
     onCleanup(() => {
       controller.abort();
     });
@@ -68,16 +54,15 @@ const App: Component = () => {
 
   return (
     <div>
-      <Show when={error()}>
-        <p style={{ color: "red" }}>Error: {error()}</p>
+      <Show when={state.error}>
+        <p style={{ color: "red" }}>Error: {state.error}</p>
       </Show>
-      <Show when={loading()}>
+      <Show when={state.loading}>
         <p>Loading...</p>
       </Show>
-
       <main>
         <ul>
-          <For each={items()}>
+          <For each={state.items}>
             {(item) => (
               <li>
                 {item.topic}
