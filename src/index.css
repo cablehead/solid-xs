@@ -88,3 +88,8 @@ nav ul li:hover {
   color: var(--color-hover-fg);
   background-color: var(--color-hover-bg);
 }
+
+nav ul li.active {
+  color: var(--color-active-fg);
+  background-color: var(--color-active-bg);
+}

@@ -5,8 +5,8 @@ const Nav: Component<{ items: StreamedItem[] }> = (props) => (
   <nav>
     <ul>
       <For each={props.items}>
-        {(item) => (
-          <li>
+        {(item, index) => (
+          <li class={index() === 0 ? "active" : ""}>
             {item.topic}
           </li>
         )}
