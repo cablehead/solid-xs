@@ -27,6 +27,25 @@ const App: Component = () => {
       </Show>
       <main>
         <Nav items={state.items} />
+        <article>
+          <For each={state.items}>
+            {(item) => (
+              <section>
+                <ul>
+                  <Show when={item.meta} fallback={<li>No meta</li>}>
+                    <For each={Object.keys(item.meta)}>
+                      {(key) => (
+                        <li>
+                          {key}: {item.meta[key]}
+                        </li>
+                      )}
+                    </For>
+                  </Show>
+                </ul>
+              </section>
+            )}
+          </For>
+        </article>
       </main>
     </div>
   );
