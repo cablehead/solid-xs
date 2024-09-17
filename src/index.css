@@ -17,18 +17,29 @@
   --green: #859900;
 
   --color-fg: var(--base0);
+  --color-bg: var(--base3);
+
+  --color-active-fg: var(--base1);
+  --color-active-bg: var(--base02);
+  --color-hover-fg: var(--base1);
+  --color-hover-bg: var(--base02);
+
   --accent-paragraph-color: var(--base1);
   --headline-color: var(--base00);
-  --color-bg: var(--base3);
   --link-color: var(--blue);
   --shadow-color: rgba(0, 0, 0, 0.7);
 }
 
 html[data-theme="dark"] {
+  --color-bg: var(--base03);
   --color-fg: var(--base0);
+  --color-active-fg: var(--base1);
+  --color-active-bg: var(--base02);
+  --color-hover-fg: var(--base1);
+  --color-hover-bg: var(--base02);
+
   --accent-paragraph-color: var(--base1);
   --headline-color: var(--base1);
-  --color-bg: var(--base03);
   --link-color: var(--blue);
   --shadow-color: rgba(100, 255, 255, 0.7);
 }
@@ -73,7 +84,7 @@ nav ul li {
   align-items: center;
 }
 
-
 nav ul li:hover {
-  background-color: #2a2d2e;
+  color: var(--color-hover-fg);
+  background-color: var(--color-hover-bg);
 }
